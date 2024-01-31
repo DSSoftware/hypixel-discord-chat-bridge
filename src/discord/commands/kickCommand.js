@@ -1,10 +1,10 @@
-const HypixelDiscordChatBridgeError = require("../../contracts/errorHandler.js");
-const { EmbedBuilder } = require("discord.js");
-const config = require("../../../config.json");
+const { SuccessEmbed } = require("../../contracts/embedHandler.js");
 
 module.exports = {
   name: "kick",
   description: "Kick the given user from the Guild.",
+  moderatorOnly: true,
+  requiresBot: true,
   options: [
     {
       name: "name",
@@ -21,6 +21,7 @@ module.exports = {
   ],
 
   execute: async (interaction) => {
+<<<<<<< HEAD
     const user = interaction.member;
     if (
       config.discord.commands.checkPerms === true &&
@@ -43,6 +44,12 @@ module.exports = {
         text: "/help [command] for more information",
         iconURL: config.minecraft.API.SCF.logo,
       });
+=======
+    const [name, reason] = [interaction.options.getString("name"), interaction.options.getString("reason")];
+    bot.chat(`/g kick ${name} ${reason}`);
+
+    const embed = new SuccessEmbed(`Successfully kicked **${name}** from the guild.`);
+>>>>>>> main
 
     await interaction.followUp({
       embeds: [embed],

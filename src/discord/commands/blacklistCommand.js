@@ -1,10 +1,15 @@
 const HypixelDiscordChatBridgeError = require("../../contracts/errorHandler.js");
-const { EmbedBuilder } = require("discord.js");
-const config = require("../../../config.json");
+const { SuccessEmbed } = require("../../contracts/embedHandler.js");
 
 module.exports = {
   name: "blacklist",
+<<<<<<< HEAD
   description: "Blacklists the user from using the bot.",
+=======
+  description: "Demotes the given user by one guild rank.",
+  moderatorOnly: true,
+  requiresBot: true,
+>>>>>>> main
   options: [
     {
       name: "arg",
@@ -31,14 +36,6 @@ module.exports = {
   ],
 
   execute: async (interaction) => {
-    const user = interaction.member;
-    if (
-      config.discord.commands.checkPerms === true &&
-      !(user.roles.cache.has(config.discord.commands.commandRole) || config.discord.commands.users.includes(user.id))
-    ) {
-      throw new HypixelDiscordChatBridgeError("You do not have permission to use this command.");
-    }
-
     const name = interaction.options.getString("name");
     const arg = interaction.options.getString("arg").toLowerCase();
 
@@ -50,6 +47,7 @@ module.exports = {
       throw new HypixelDiscordChatBridgeError("Invalid Usage: `/ignore [add/remove] [name]`.");
     }
 
+<<<<<<< HEAD
     const embed = new EmbedBuilder()
       .setColor(5763719)
       .setAuthor({ name: "Blacklist" })
@@ -58,6 +56,11 @@ module.exports = {
         text: "/help for more info",
         iconURL: config.minecraft.API.SCF.logo,
       });
+=======
+    const embed = new SuccessEmbed(
+      `Successfully ${arg == "add" ? "added" : "removed"} \`${name}\` ${arg == "add" ? "to" : "from"} the blacklist.`
+    );
+>>>>>>> main
 
     await interaction.followUp({
       embeds: [embed],

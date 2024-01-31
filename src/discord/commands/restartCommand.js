@@ -1,13 +1,13 @@
-const HypixelDiscordChatBridgeError = require("../../contracts/errorHandler.js");
-const config = require("./../../../config.json");
-const { EmbedBuilder } = require("discord.js");
 const app = require("./../../Application.js");
+const { Embed } = require("../../contracts/embedHandler.js");
 
 module.exports = {
   name: "restart",
   description: "Restarts the bot.",
+  moderatorOnly: true,
 
   execute: async (interaction) => {
+<<<<<<< HEAD
     const user = interaction.member;
     if (
       config.discord.commands.checkPerms === true &&
@@ -23,6 +23,12 @@ module.exports = {
         text: "/help [command] for more information",
         iconURL: config.minecraft.API.SCF.logo,
       });
+=======
+    const restartEmbed = new Embed(15548997, "Restarting...", "The bot is restarting. This might take few seconds.", {
+      text: `by @george_filos | /help [command] for more information`,
+      iconURL: "https://cdn.discordapp.com/avatars/177083022305263616/4ee1d5f278a36a61aa9164b9263c8722.webp",
+    });
+>>>>>>> main
 
     interaction.followUp({ embeds: [restartEmbed] });
 
@@ -33,6 +39,7 @@ module.exports = {
       app.connect();
     });
 
+<<<<<<< HEAD
     const successfulRestartEmbed = new EmbedBuilder()
       .setColor(2067276)
       .setTitle("Restart Successful!")
@@ -41,6 +48,12 @@ module.exports = {
         text: "/help [command] for more information",
         iconURL: config.minecraft.API.SCF.logo,
       });
+=======
+    const successfulRestartEmbed = new Embed(2067276, "Success!", "The bot has been restarted successfully.", {
+      text: `by @george_filos | /help [command] for more information`,
+      iconURL: "https://cdn.discordapp.com/avatars/177083022305263616/4ee1d5f278a36a61aa9164b9263c8722.webp",
+    });
+>>>>>>> main
 
     interaction.followUp({ embeds: [successfulRestartEmbed] });
   },

@@ -1,10 +1,10 @@
-const HypixelDiscordChatBridgeError = require("../../contracts/errorHandler.js");
-const { EmbedBuilder } = require("discord.js");
-const config = require("../../../config.json");
+const { SuccessEmbed } = require("../../contracts/embedHandler.js");
 
 module.exports = {
   name: "execute",
   description: "Executes commands as the minecraft bot.",
+  moderatorOnly: true,
+  requiresBot: true,
   options: [
     {
       name: "command",
@@ -15,17 +15,10 @@ module.exports = {
   ],
 
   execute: async (interaction) => {
-    const user = interaction.member;
-    if (
-      config.discord.commands.checkPerms === true &&
-      !(user.roles.cache.has(config.discord.commands.commandRole) || config.discord.commands.users.includes(user.id))
-    ) {
-      throw new HypixelDiscordChatBridgeError("You do not have permission to use this command.");
-    }
-
     const command = interaction.options.getString("command");
     bot.chat(`/${command}`);
 
+<<<<<<< HEAD
     const commandMessage = new EmbedBuilder()
       .setColor(2067276)
       .setTitle("Command has been executed successfully")
@@ -34,6 +27,9 @@ module.exports = {
         text: "/help for more info",
         iconURL: config.minecraft.API.SCF.logo,
       });
+=======
+    const commandMessage = new SuccessEmbed(`Successfully executed \`/${command}\``);
+>>>>>>> main
 
     await interaction.followUp({ embeds: [commandMessage], ephemeral: true });
   },
