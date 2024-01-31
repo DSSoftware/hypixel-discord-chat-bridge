@@ -1,9 +1,5 @@
-<<<<<<< HEAD
-const { EmbedBuilder } = require("discord.js");
-const config = require("../../../config.json");
-=======
 const { Embed } = require("../../contracts/embedHandler.js");
->>>>>>> main
+const config = require("../../../config.json");
 
 module.exports = {
   name: "guildtop",
@@ -63,18 +59,7 @@ module.exports = {
       })
       .join("");
 
-<<<<<<< HEAD
-    const embed = new EmbedBuilder()
-      .setColor("#2ECC71")
-      .setTitle("Top 10 Guild Members")
-      .setDescription(description)
-      .setFooter({
-        text: "/help [command] for more information",
-        iconURL: config.minecraft.API.SCF.logo,
-      });
-=======
     const embed = new Embed("#2ECC71", "Top 10 Guild Members", description);
->>>>>>> main
 
     return await interaction.followUp({ embeds: [embed] });
   },

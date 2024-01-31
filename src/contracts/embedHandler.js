@@ -1,4 +1,5 @@
 const { EmbedBuilder } = require("discord.js");
+const config = require("../../config.json");
 
 /**
  * Constructs a new instance of the class.
@@ -11,8 +12,8 @@ class Embed extends EmbedBuilder {
     super();
 
     this.setFooter({
-      text: `by @duckysolucky | /help [command] for more information`,
-      iconURL: "https://imgur.com/tgwQJTX.png",
+      text: `by @artemdev | /help [command] for more information`,
+      iconURL: config.minecraft.API.SCF.logo,
     });
 
     if (color) {

@@ -1,4 +1,5 @@
 const { EmbedBuilder } = require("discord.js");
+const { SuccessEmbed } = require("../../contracts/embedHandler.js");
 
 module.exports = {
   name: "unmute",
@@ -18,14 +19,7 @@ module.exports = {
     const name = interaction.options.getString("name");
     bot.chat(`/g unmute ${name}`);
 
-    const embed = new EmbedBuilder()
-      .setColor(5763719)
-      .setAuthor({ name: "Unmute" })
-      .setDescription(`Successfully executed \`/g unmute ${name}\``)
-      .setFooter({
-        text: "/help [command] for more information",
-        iconURL: config.minecraft.API.SCF.logo,
-      });
+    const embed = new SuccessEmbed(`Successfully unmuted \`${name}\`.`);
 
     await interaction.followUp({
       embeds: [embed],

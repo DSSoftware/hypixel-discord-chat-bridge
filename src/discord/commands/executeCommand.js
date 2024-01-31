@@ -18,18 +18,7 @@ module.exports = {
     const command = interaction.options.getString("command");
     bot.chat(`/${command}`);
 
-<<<<<<< HEAD
-    const commandMessage = new EmbedBuilder()
-      .setColor(2067276)
-      .setTitle("Command has been executed successfully")
-      .setDescription(`\`/${command}\`\n`)
-      .setFooter({
-        text: "/help for more info",
-        iconURL: config.minecraft.API.SCF.logo,
-      });
-=======
     const commandMessage = new SuccessEmbed(`Successfully executed \`/${command}\``);
->>>>>>> main
 
     await interaction.followUp({ embeds: [commandMessage], ephemeral: true });
   },

@@ -1,0 +1,155 @@
+{
+  "minecraft": {
+    "bot": {
+      "prefix": "!",
+      "messageFormat": "{username} » {message}",
+      "messageRepeatBypassLength": 28,
+      "unique_id": "SCF_MAIN_BRIDGE"
+    },
+    "commands": {
+      "normal": true,
+      "soopy": false
+    },
+    "fragBot": {
+      "enabled": false,
+      "whitelist": false,
+      "customWhitelist": [],
+      "blacklist": false,
+      "blacklisted": []
+    },
+    "guild": {
+      "guildExp": 50000
+    },
+    "API": {
+      "hypixelAPIkey": "1987545c-6d76-493b-a87e-3d361ba023d9",
+      "imgurAPIkey": "1ef15aa02f3e8dbf514479996b53ade6f2c2e90d",
+
+      "resolvers": {
+        "IGN_to_UUID": "https://api.mojang.com/users/profiles/minecraft",
+        "UUID_to_IGN": "https://sessionserver.mojang.com/session/minecraft/profile"
+      },
+
+      "SCF": {
+        "enabled": true,
+        "key": "XVHZa9F5C6LNyZbjgSvF3EENhQ4kRxFv4xAddBVp8rezkW3VnGYcpnEFSqrNnzCgeRQAJ8u8yeLyBAqUFYxMDHQmVaVHC7jzV9K9Bn6B3ZC4NXV43r3fs8Vx2t8QAaNu",
+        "fail_webhook": "https://discord.com/api/webhooks/1126240641366638725/xnl3Xk-gCxoCeF4fKxgSAvpEcFlagPURxtzmSqW1eF9cWtNG_Tl9kIpRiaolWZO9rDb3",
+        "logo": "https://sky.dssoftware.ru/logo_scf.png"
+      }
+    },
+    "guildRequirements": {
+      "enabled": true,
+      "autoAccept": true,
+      "requirements": {
+        "bedwarsStars": 0,
+        "bedwarsStarsWithFKDR": 0,
+        "bedwarsFKDR": 0,
+
+        "skywarsStars": 0,
+        "skywarsStarsWithKDR": 0,
+        "skywarsKDR": 0,
+
+        "duelsWins": 0,
+        "duelsWinsWithWLR": 0,
+        "duelsWLR": 0,
+
+        "senitherWeight": 0,
+        "lilyWeight": 0,
+        "skyblockLevel": 0
+      }
+    },
+    "skyblockEventsNotifications": {
+      "enabled": true,
+      "notifiers": {
+        "BANK_INTEREST": true,
+        "DARK_AUCTION": true,
+        "ELECTION_BOOTH_OPENS": true,
+        "ELECTION_OVER": true,
+        "FALLEN_STAR_CULT": true,
+        "FEAR_MONGERER": true,
+        "JACOBS_CONTEST": true,
+        "JERRYS_WORKSHOP": true,
+        "NEW_YEAR_CELEBRATION": true,
+        "SEASON_OF_JERRY": true,
+        "SPOOKY_FESTIVAL": true,
+        "TRAVELING_ZOO": true
+      },
+      "customTime": {
+        "3": ["BANK_INTEREST", "DARK_AUCTION", "JACOBS_CONTEST"],
+        "5": [
+          "ELECTION_BOOTH_OPENS",
+          "ELECTION_OVER",
+          "FALLEN_STAR_CULT",
+          "FEAR_MONGERER",
+          "JERRYS_WORKSHOP",
+          "NEW_YEAR_CELEBRATION",
+          "SEASON_OF_JERRY",
+          "TRAVELING_ZOO",
+          "SPOOKY_FESTIVAL"
+        ],
+        "30": [
+          "BANK_INTEREST",
+          "DARK_AUCTION",
+          "JACOBS_CONTEST",
+          "ELECTION_BOOTH_OPENS",
+          "ELECTION_OVER",
+          "FALLEN_STAR_CULT",
+          "FEAR_MONGERER",
+          "JERRYS_WORKSHOP",
+          "NEW_YEAR_CELEBRATION",
+          "SEASON_OF_JERRY",
+          "TRAVELING_ZOO",
+          "SPOOKY_FESTIVAL"
+        ]
+      }
+    },
+    "hypixelUpdates": {
+      "enabled": false,
+      "hypixelNews": false,
+      "statusUpdates": false,
+      "skyblockVersion": false
+    }
+  },
+  "discord": {
+    "bot": {
+      "token": "MTA0OTM3OTU5NjAwNjU4ODQxNw.GJLKCg.YeMG9qTBpJh3XrVtsdpMYdIDbv-A1KanA5kM18",
+      "serverID": "1048690255873720330"
+    },
+    "channels": {
+      "guildChatChannel": "1049381169982099496",
+      "officerChannel": "1049380909792645212",
+      "loggingChannel": "1201644776123011113",
+      "debugMode": true,
+      "debugChannel": "1100969353001844748",
+      "allowedBots": ["155149108183695360"]
+    },
+    "replication": {
+      "enabled": true,
+      "token": "MTE5OTg0NDgyMDYzODc3MzI1OA.GAiagl.w_pWkAR7issohEkEOK0lKxbTswxP25IHWGAb9U",
+      "serverID": "764326796736856066",
+      "channels": {
+        "guild": "1198657634832764958",
+        "debug": false
+      }
+    },
+    "commands": {
+      "checkPerms": true,
+      "commandRole": "1048690255903072343",
+      "users": ["476365125922586635"]
+    },
+    "other": {
+      "messageMode": "bot",
+      "filterMessages": true,
+      "filterWords": ["dox", "doxx", "doxed", "doxxed", "doxing", "doxxing", "doxes", "doxxes", "zickles"],
+      "joinMessage": true,
+      "autoLimbo": true
+    }
+  },
+  "web": {
+    "enabled": false,
+    "port": 1439
+  },
+  "other": {
+    "autoUpdater": false,
+    "autoUpdaterInterval": 12
+  }
+}

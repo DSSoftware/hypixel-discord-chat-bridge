@@ -3,13 +3,9 @@ const { SuccessEmbed } = require("../../contracts/embedHandler.js");
 
 module.exports = {
   name: "blacklist",
-<<<<<<< HEAD
   description: "Blacklists the user from using the bot.",
-=======
-  description: "Demotes the given user by one guild rank.",
   moderatorOnly: true,
   requiresBot: true,
->>>>>>> main
   options: [
     {
       name: "arg",
@@ -47,20 +43,9 @@ module.exports = {
       throw new HypixelDiscordChatBridgeError("Invalid Usage: `/ignore [add/remove] [name]`.");
     }
 
-<<<<<<< HEAD
-    const embed = new EmbedBuilder()
-      .setColor(5763719)
-      .setAuthor({ name: "Blacklist" })
-      .setDescription(`Successfully executed \`/ignore ${arg} ${name}\``)
-      .setFooter({
-        text: "/help for more info",
-        iconURL: config.minecraft.API.SCF.logo,
-      });
-=======
     const embed = new SuccessEmbed(
       `Successfully ${arg == "add" ? "added" : "removed"} \`${name}\` ${arg == "add" ? "to" : "from"} the blacklist.`
     );
->>>>>>> main
 
     await interaction.followUp({
       embeds: [embed],

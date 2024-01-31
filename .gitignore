@@ -1,4 +1,3 @@
 node_modules/
 .prettierrc.json
 auth-cache/
-config.json
