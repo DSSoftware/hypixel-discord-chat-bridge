@@ -117,7 +117,7 @@ class MessageHandler {
         chat = "Debug";
       }
 
-      if (content.length >= 5 && sender_data?.data?.guild_id == "638b9e6a8ea8c990c96e91f7") {
+      if (sender_data?.data?.guild_id == "638b9e6a8ea8c990c96e91f7") {
         this.saveGuildMessage(real_username, sender_data?.data?.uuid);
       }
 

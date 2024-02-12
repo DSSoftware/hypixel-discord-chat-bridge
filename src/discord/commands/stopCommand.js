@@ -1,24 +1,17 @@
 const HypixelDiscordChatBridgeError = require("../../contracts/errorHandler.js");
-const { EmbedBuilder } = require("discord.js");
 const config = require("../../../config.json");
+const { EmbedBuilder } = require("discord.js");
+const app = require("../../Application.js");
 const AuthProvider = require("../AuthProvider.js");
 
 module.exports = {
-  name: "promote",
-  description: "Promotes the given user by one guild rank.",
-  options: [
-    {
-      name: "name",
-      description: "Minecraft Username",
-      type: 3,
-      required: true,
-    },
-  ],
+  name: "stop",
+  description: "Kills the bot.",
 
   execute: async (interaction) => {
     const user = interaction.member;
     const executor_id = user.id;
-    const permission_required = 'mc_promote';
+    const permission_required = 'restart';
 
     let permission = false;
 
@@ -29,20 +22,19 @@ module.exports = {
       throw new HypixelDiscordChatBridgeError("You do not have permission to use this command, or the Permission API is Down.");
     }
 
-    const name = interaction.options.getString("name");
-    bot.chat(`/g promote ${name}`);
-
-    const embed = new EmbedBuilder()
-      .setColor(5763719)
-      .setAuthor({ name: "Promote" })
-      .setDescription(`Successfully executed \`/g promote ${name}\``)
+    const restartEmbed = new EmbedBuilder()
+      .setColor(15548997)
+      .setTitle("Shutting down...")
+      .setDescription("The bot will be shut down in 5 seconds.")
       .setFooter({
         text: "/help [command] for more information",
         iconURL: config.minecraft.API.SCF.logo,
       });
 
-    await interaction.followUp({
-      embeds: [embed],
-    });
+    interaction.followUp({ embeds: [restartEmbed] });
+
+    setTimeout(()=>{
+      process.exit(123);
+    }, 5000);
   },
 };

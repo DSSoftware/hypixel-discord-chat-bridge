@@ -457,6 +457,7 @@ class StateHandler extends eventHandler {
         color: 15548997,
         channel: "Guild",
       });
+      process.exit(123);
     }
 
     if (this.isIncorrectUsage(message)) {
@@ -784,9 +785,7 @@ class StateHandler extends eventHandler {
       this.command.handle(match.groups.username, match.groups.message, command_channel);
     }
 
-    if (match.groups.message.length >= 5) {
-      this.saveGuildMessage(match.groups.username);
-    }
+    this.saveGuildMessage(match.groups.username);
 
     if ((this.isDiscordMessage(match.groups.message) && match.groups.username === this.bot.username) === false) {
       const { chatType, rank, username, guildRank = "Member", message } = match.groups;

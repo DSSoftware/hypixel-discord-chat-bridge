@@ -1,10 +1,9 @@
-const { Embed } = require("../../contracts/embedHandler.js");
+const { EmbedBuilder } = require("discord.js");
 const config = require("../../../config.json");
 
 module.exports = {
   name: "guildtop",
   description: "Top 10 members with the most guild experience.",
-  requiresBot: true,
   options: [
     {
       name: "time",
@@ -59,7 +58,14 @@ module.exports = {
       })
       .join("");
 
-    const embed = new Embed("#2ECC71", "Top 10 Guild Members", description);
+    const embed = new EmbedBuilder()
+      .setColor("#2ECC71")
+      .setTitle("Top 10 Guild Members")
+      .setDescription(description)
+      .setFooter({
+        text: "/help [command] for more information",
+        iconURL: config.minecraft.API.SCF.logo,
+      });
 
     return await interaction.followUp({ embeds: [embed] });
   },

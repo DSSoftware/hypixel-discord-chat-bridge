@@ -12,7 +12,7 @@ class DiscordLinkCommand extends minecraftCommand {
 
   onCommand(username, message, channel = "gc") {
     try {
-      this.send(`/${channel} https://discord.gg/JRZJtEdX9D`);
+      this.send(`/${channel} Join SBU: https://discord.gg/sbuni | Our guild discord: https://discord.gg/JRZJtEdX9D`);
     } catch (error) {
       this.send("/${channel} Something went wrong..");
     }

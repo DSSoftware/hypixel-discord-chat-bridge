@@ -5,12 +5,8 @@ const fs = require("fs");
 module.exports = {
   name: "info",
   description: "Shows information about the bot.",
-  requiresBot: true,
 
   execute: async (interaction) => {
-    if (bot === undefined || bot._client.chat === undefined) {
-      throw new HypixelDiscordChatBridgeError("Bot doesn't seem to be connected to Hypixel. Please try again.");
-    }
     const commands = interaction.client.commands;
 
     const { discordCommands, minecraftCommands } = getCommands(commands);

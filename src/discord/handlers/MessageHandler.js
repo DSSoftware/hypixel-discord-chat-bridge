@@ -29,9 +29,8 @@ class MessageHandler {
       if (message.channel.id == config.discord.channels.officerChannel) {
         chat = "Officer/InterDiscord";
       }
-      if (content.length >= 5) {
-        this.saveGuildMessage(message.member.displayName);
-      }
+      
+      this.saveGuildMessage(message.member.displayName);
 
       const messageData = {
         chat: chat,

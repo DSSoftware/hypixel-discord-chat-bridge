@@ -1,6 +1,7 @@
 const cluster = require("node:cluster");
 const axios = require("axios");
 const config = require("./config.json");
+const Logger = require("./src/Logger.js");
 
 const webhook_url = config.minecraft.API.SCF.fail_webhook;
 
@@ -35,6 +36,7 @@ if (cluster.isPrimary) {
   }
 
   let process_state = false;
+  let forced_shutdown = false;
 
   function reforkProcess() {
     cluster.fork();
@@ -47,6 +49,9 @@ if (cluster.isPrimary) {
   }
 
   function checkInstructions() {
+    if(forced_shutdown){
+      return;
+    }
     let requested_state = 1;
 
     axios
@@ -86,6 +91,38 @@ if (cluster.isPrimary) {
 
   cluster.on("exit", function (worker, code, signal) {
     process_state = false;
+    if(code == 123){
+      var params = {
+        content: "<@&1172990412802248704>",
+        embeds: [
+          {
+            title: "Bot Stopped",
+            fields: [
+              {
+                name: "Exception Data",
+                value: `Something bad has happened to the bot, maybe it's banned or muted. The app will shut down.`,
+              },
+            ],
+          },
+        ],
+      };
+
+      fetch(webhook_url, {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+        },
+        body: JSON.stringify(params),
+      });
+
+      forced_shutdown = true;
+
+      Logger.errorMessage("The bot was shut down! Continuing to run the parent process...");
+
+      for (const id in cluster.workers) {
+        cluster.workers[id].kill();
+      }
+    }
     console.log(`Fork exited with exit code ${code}.`);
   });
 }

@@ -63,29 +63,20 @@ class CommandHandler {
     let team = "None";
     let auth_provider = "SCF_INTERNAL";
 
-    if(user.roles.cache.has('924332988743966751') || user.roles.cache.has('801634222577156097')){
+    if(user.roles.cache.has('1048690255903072339') || user.roles.cache.has('1048690255903072340')){
       permission_level = 1;
-      perm_name = "SBU Moderator";
-      team = "SBU";
-      auth_provider = "SBU_ROLES";
+      perm_name = "SCF Moderator";
+      team = "SCF";
+      auth_provider = "SCF_ROLES";
 
       permissions = MOD_PERMS;
     }
 
-    if(user.roles.cache.has('808070562046935060') || user.roles.cache.has('766041783137468506')){
+    if(user.roles.cache.has('1203459776667979808') || user.roles.cache.has('1048690255903072342') || user.roles.cache.has('1048690255903072343') || user.roles.cache.has('1048690255903072344')){
       permission_level = 3;
-      perm_name = "SBU Admin";
-      team = "SBU";
-      auth_provider = "SBU_ROLES";
-
-      permissions = ADM_PERMS;
-    }
-    
-    if(user.roles.cache.has('1198653901965111448')){
-      permission_level = 4;
       perm_name = "SCF Admin";
       team = "SCF";
-      auth_provider = "SBU_ROLES";
+      auth_provider = "SCF_ROLES";
 
       permissions = ADM_PERMS;
     }

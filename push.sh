@@ -3,4 +3,4 @@ cd /home/node/bridge
 git pull 
 git fetch --all 
 git reset --hard 
-node index.js
+node --no-deprecation index.js

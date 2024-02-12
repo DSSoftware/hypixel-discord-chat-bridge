@@ -1,3 +1,3 @@
 pkill -f node
 cd /home/node/bridge
-node index.js
+node --no-deprecation index.js
