@@ -117,9 +117,7 @@ class MessageHandler {
         chat = "Debug";
       }
 
-      if (sender_data?.data?.guild_id == "638b9e6a8ea8c990c96e91f7") {
-        this.saveGuildMessage(real_username, sender_data?.data?.uuid);
-      }
+      this.saveGuildMessage(real_username, sender_data?.data?.uuid, sender_data?.data?.guild_id ?? "");
 
       const messageData = {
         member: message.member.user,
@@ -158,10 +156,10 @@ class MessageHandler {
     }
   }
 
-  async saveGuildMessage(username, uuid) {
+  async saveGuildMessage(username, uuid, guild) {
     let message_send = await Promise.all([
       axios.get(
-        `https://sky.dssoftware.ru/api.php?method=saveGuildMessage&uuid=${uuid}&source=SBU&api=${config.minecraft.API.SCF.key}&nick=${username}`
+        `https://sky.dssoftware.ru/api.php?method=saveGuildMessage&uuid=${uuid}&source=SBU&api=${config.minecraft.API.SCF.key}&nick=${username}&guild_id=${guild}`
       ),
     ]).catch((error) => {});
 

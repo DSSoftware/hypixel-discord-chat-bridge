@@ -10,6 +10,7 @@ const Logger = require("../Logger.js");
 const Filter = require("bad-words");
 const filter = new Filter();
 filter.removeWords("god", "damn");
+filter.addWords(...config.discord.other.filterWords);
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 class MinecraftManager extends CommunicationBridge {

@@ -7,11 +7,11 @@ const imgurClient = new ImgurClient({
 
 async function uploadImage(image) {
   const response = await imgurClient.upload({
-    image: image,
-    type: "stream",
+    image: image.toString("base64"),
   });
 
   if (response.success === false) {
+    console.log(response);
     // eslint-disable-next-line no-throw-literal
     throw "An error occured while uploading the image. Please try again later.";
   }

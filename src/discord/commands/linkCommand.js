@@ -5,7 +5,7 @@ const axios = require("axios");
 const AuthProvider = require("../AuthProvider.js");
 
 module.exports = {
-  name: "link",
+  name: "scf-link",
   description: "Links the correct user account for the bridge.",
   options: [
     {

@@ -46,10 +46,18 @@ class AuctionHouseCommand extends minecraftCommand {
 
       const activeAuctions = auctions.filter((auction) => auction.end >= Date.now());
 
+      let auctions_len = 0;
+
       for (const auction of activeAuctions) {
+        if(auctions_len >= 4){
+          string += ` (4 out of ${activeAuctions.length})`;
+          break;
+        }
         const lore = auction.item_lore.split("\n");
 
         lore.push("§8§m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯", `§7Seller: ${getRank(player)} ${player.displayname}`);
+
+        
 
         if (auction.bin === undefined) {
           if (auction.bids.length === 0) {
@@ -88,6 +96,7 @@ class AuctionHouseCommand extends minecraftCommand {
         const upload = await uploadImage(renderedItem);
 
         string += string === "" ? upload.data.link : " | " + upload.data.link;
+        auctions_len++;
       }
 
       this.send(`/${channel} ${`${username}'s Active Auctions: ${string}`}`);
