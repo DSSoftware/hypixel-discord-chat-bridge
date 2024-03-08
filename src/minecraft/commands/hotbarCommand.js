@@ -1,6 +1,6 @@
 // eslint-disable-next-line
 const { getLatestProfile } = require("../../../API/functions/getLatestProfile.js");
-const config = require("../../../config.json");
+const config = require("../../../config.js");
 const { decodeData, formatUsername } = require("../../contracts/helperFunctions.js");
 const minecraftCommand = require("../../contracts/minecraftCommand.js");
 

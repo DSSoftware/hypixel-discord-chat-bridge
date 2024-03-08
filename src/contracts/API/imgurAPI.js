@@ -1,4 +1,4 @@
-const config = require("../../../config.json");
+const config = require("../../../config.js");
 const { ImgurClient } = require("imgur");
 
 const imgurClient = new ImgurClient({
@@ -7,11 +7,10 @@ const imgurClient = new ImgurClient({
 
 async function uploadImage(image) {
   const response = await imgurClient.upload({
-    image: image.toString("base64"),
+    image: image,
   });
 
   if (response.success === false) {
-    console.log(response);
     // eslint-disable-next-line no-throw-literal
     throw "An error occured while uploading the image. Please try again later.";
   }

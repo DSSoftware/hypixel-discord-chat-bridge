@@ -1,12 +1,11 @@
-
 const HypixelDiscordChatBridgeError = require("../../contracts/errorHandler.js");
 const { EmbedBuilder } = require("discord.js");
-const config = require("../../../config.json");
+const config = require("../../../config.js");
 const axios = require("axios");
 const AuthProvider = require("../AuthProvider.js");
 
 module.exports = {
-  name: "permission",
+  name: `${config.minecraft.bot.guild_prefix}` + "permission",
   description: "Changes user permission level.",
   options: [
     {
@@ -42,8 +41,8 @@ module.exports = {
           value: "0",
         },
         {
-            name: "Reset",
-            value: "-1",
+          name: "Reset",
+          value: "-1",
         },
       ],
     },
@@ -52,7 +51,7 @@ module.exports = {
   execute: async (interaction) => {
     const user = interaction.member;
     const executor_id = user.id;
-    const permission_required = 'manage_roles';
+    const permission_required = "manage_roles";
 
     let permission = false;
 
@@ -61,20 +60,20 @@ module.exports = {
     permission = executorData.permissions?.[permission_required] ?? false;
 
     if (!permission) {
-      throw new HypixelDiscordChatBridgeError("You do not have permission to use this command, or the Permission API is Down.");
+      throw new HypixelDiscordChatBridgeError(
+        "You do not have permission to use this command, or the Permission API is Down.",
+      );
     }
     const discord_user = interaction.options.getUser("user").id;
     const level = parseInt(interaction.options.getString("level"));
 
-    if(level >= executorData.level){
+    if (level >= executorData.level) {
       throw new HypixelDiscordChatBridgeError("You cannot promote to level higher than yours.");
     }
 
-    let team = (level % 2) == 1 ? "SBU" : "SCF";
-
     let give_role = await Promise.all([
       axios.get(
-        `https://sky.dssoftware.ru/api.php?method=setPermissionLevel&discord_id=${discord_user}&team=${team}&level=${level}&api=${config.minecraft.API.SCF.key}&executed_by=${executor_id}`
+        `https://sky.dssoftware.ru/api.php?method=setPermissionLevel&discord_id=${discord_user}&team=None&level=${level}&api=${config.minecraft.API.SCF.key}&executed_by=${executor_id}`,
       ),
     ]).catch((error) => {});
 

@@ -1,4 +1,4 @@
-const config = require("../../../config.json");
+const config = require("../../../config.js");
 const Logger = require("../../Logger.js");
 
 class StateHandler {
@@ -52,9 +52,9 @@ class StateHandler {
       case "Guild":
         return this.discord.client.channels.cache.get(config.discord.replication.channels.guild);
       case "Officer":
-        return undefined;
+        return this.discord.client.channels.cache.get(config.discord.replication.channels.officer);
       case "Logger":
-        return this.discord.client.channels.cache.get(config.discord.replication.channels.debug);
+        return this.discord.client.channels.cache.get(config.discord.replication.channels.logging);
       default:
         return this.discord.client.channels.cache.get(config.discord.replication.channels.debug);
     }

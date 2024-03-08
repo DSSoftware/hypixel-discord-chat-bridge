@@ -1,17 +1,17 @@
 const HypixelDiscordChatBridgeError = require("../../contracts/errorHandler.js");
-const config = require("../../../config.json");
+const config = require("../../../config.js");
 const { EmbedBuilder } = require("discord.js");
 const app = require("../../Application.js");
 const AuthProvider = require("../AuthProvider.js");
 
 module.exports = {
-  name: "stop",
+  name: `${config.minecraft.bot.guild_prefix}` + "stop",
   description: "Kills the bot.",
 
   execute: async (interaction) => {
     const user = interaction.member;
     const executor_id = user.id;
-    const permission_required = 'restart';
+    const permission_required = "restart";
 
     let permission = false;
 
@@ -19,7 +19,9 @@ module.exports = {
     permission = (await AuthData.permissionInfo(user)).permissions?.[permission_required] ?? false;
 
     if (!permission) {
-      throw new HypixelDiscordChatBridgeError("You do not have permission to use this command, or the Permission API is Down.");
+      throw new HypixelDiscordChatBridgeError(
+        "You do not have permission to use this command, or the Permission API is Down.",
+      );
     }
 
     const restartEmbed = new EmbedBuilder()
@@ -33,7 +35,7 @@ module.exports = {
 
     interaction.followUp({ embeds: [restartEmbed] });
 
-    setTimeout(()=>{
+    setTimeout(() => {
       process.exit(123);
     }, 5000);
   },

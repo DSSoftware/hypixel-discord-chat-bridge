@@ -1,9 +1,9 @@
 const { EmbedBuilder } = require("discord.js");
-const config = require("../../../config.json");
+const config = require("../../../config.js");
 const fs = require("fs");
 
 module.exports = {
-  name: "info",
+  name: `${config.minecraft.bot.guild_prefix}` + "info",
   description: "Shows information about the bot.",
 
   execute: async (interaction) => {
@@ -33,7 +33,7 @@ module.exports = {
           }\`\nAuto Accept: \`${
             config.minecraft.guildRequirements.autoAccept ? "enabled" : "disabled"
           }\`\nGuild Experience Requirement: \`${config.minecraft.guild.guildExp.toLocaleString()}\`\nUptime: Online since <t:${Math.floor(
-            (Date.now() - client.uptime) / 1000
+            (Date.now() - client.uptime) / 1000,
           )}:R>\nVersion: \`${require("../../../package.json").version}\`\n`,
           inline: true,
         },
@@ -47,13 +47,13 @@ module.exports = {
             config.discord.channels.loggingChannel ? `<#${config.discord.channels.loggingChannel}>` : "None"
           }\nDebugging Channel: ${
             config.discord.channels.debugChannel ? `<#${config.discord.channels.debugChannel}>` : "None"
-          }\nCommand Role: <@&${config.discord.commands.commandRole}>\nMessage Mode: \`${
+          }\nCommand Role: <@&${config.discord.commands.notifyRole}>\nMessage Mode: \`${
             config.discord.other.messageMode
           }\`\nFilter: \`${config.discord.other.filterMessages ? "enabled" : "disabled"}\`\nJoin Messages: \`${
             config.discord.other.joinMessage ? "enabled" : "disabled"
           }\``,
           inline: true,
-        }
+        },
       )
       .setFooter({
         text: "/help [command] for more information",

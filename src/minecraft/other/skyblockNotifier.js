@@ -1,4 +1,4 @@
-const config = require("../../../config.json");
+const config = require("../../../config.js");
 const cheerio = require("cheerio");
 const Rss = require("rss-parser");
 const axios = require("axios");
@@ -105,7 +105,7 @@ async function checkForSkyblockVersion() {
     if (skyblockVersion !== data.version) {
       if (skyblockVersion !== undefined) {
         bot.chat(
-          `/gc [HYPIXEL SKYBLOCK] Skyblock version has been updated to ${data.version}! Server restarts might occur!`
+          `/gc [HYPIXEL SKYBLOCK] Skyblock version has been updated to ${data.version}! Server restarts might occur!`,
         );
       }
 

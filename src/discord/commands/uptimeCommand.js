@@ -1,8 +1,8 @@
 const { EmbedBuilder } = require("discord.js");
-const config = require("../../../config.json");
+const config = require("../../../config.js");
 
 module.exports = {
-  name: "uptime",
+  name: `${config.minecraft.bot.guild_prefix}` + "uptime",
   description: "Shows the uptime of the bot.",
 
   execute: async (interaction) => {

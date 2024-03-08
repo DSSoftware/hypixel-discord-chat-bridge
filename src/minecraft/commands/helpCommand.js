@@ -12,7 +12,7 @@ class HelpCommand extends minecraftCommand {
 
   onCommand(username, message, channel = "gc") {
     try {
-      this.send(`/${channel} https://imgur.com/AZ2kpDO`);
+      this.send(`/${channel} https://imgur.com/a/u03rJ1v`);
     } catch (error) {
       this.send("/${channel} Something went wrong..");
     }

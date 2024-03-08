@@ -1,4 +1,4 @@
-const config = require("../../../config.json");
+const config = require("../../../config.js");
 const { addCommas, timeSince } = require("../../contracts/helperFunctions.js");
 const minecraftCommand = require("../../contracts/minecraftCommand.js");
 const { renderLore } = require("../../contracts/renderItem.js");
@@ -49,15 +49,13 @@ class AuctionHouseCommand extends minecraftCommand {
       let auctions_len = 0;
 
       for (const auction of activeAuctions) {
-        if(auctions_len >= 4){
+        if (auctions_len >= 4) {
           string += ` (4 out of ${activeAuctions.length})`;
           break;
         }
         const lore = auction.item_lore.split("\n");
 
         lore.push("§8§m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯", `§7Seller: ${getRank(player)} ${player.displayname}`);
-
-        
 
         if (auction.bin === undefined) {
           if (auction.bids.length === 0) {
@@ -66,7 +64,7 @@ class AuctionHouseCommand extends minecraftCommand {
             const bidderUUID = auction.bids[auction.bids.length - 1].bidder;
 
             const bidderResponse = await axios.get(
-              `https://api.hypixel.net/player?key=${hypixelAPIkey}&uuid=${bidderUUID}`
+              `https://api.hypixel.net/player?key=${hypixelAPIkey}&uuid=${bidderUUID}`,
             );
 
             const bidder = bidderResponse.data?.player || {};
@@ -83,7 +81,7 @@ class AuctionHouseCommand extends minecraftCommand {
               `§7`,
               `§7Top Bid: §6${amount.toLocaleString()} coins`,
               `§7Bidder: ${getRank(bidder)} ${bidder.displayname}`,
-              `§7`
+              `§7`,
             );
           }
         } else {

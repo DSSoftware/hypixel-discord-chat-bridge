@@ -1,11 +1,11 @@
 const HypixelDiscordChatBridgeError = require("../../contracts/errorHandler.js");
 const { EmbedBuilder } = require("discord.js");
-const config = require("../../../config.json");
+const config = require("../../../config.js");
 const axios = require("axios");
 const AuthProvider = require("../AuthProvider.js");
 
 module.exports = {
-  name: "whoami",
+  name: `${config.minecraft.bot.guild_prefix}` + "whoami",
   description: "Returns user permission info.",
 
   execute: async (interaction) => {
@@ -16,23 +16,15 @@ module.exports = {
     const AuthData = new AuthProvider();
     perm_data = await AuthData.permissionInfo(user);
 
-    let perm_info = {
-      0: "Member",
-      1: "SBU Moderator",
-      2: "SCF Moderator",
-      3: "SBU Admin",
-      4: "SCF Admin",
-      5: "SCF Guild Master"
-    };
-
-    let player_role = perm_info?.[perm_data?.level] ?? "Member";
+    let player_role = perm_data?.name ?? "Member";
     let permissions = JSON.stringify(perm_data?.permissions ?? {});
-    let team = perm_data?.team ?? "None";
 
     const embed = new EmbedBuilder()
       .setColor(5763719)
       .setAuthor({ name: "Whoami" })
-      .setDescription(`User permission info:\nPlatform Auth Provider: \`${perm_data?.provider ?? "None"}\`\nUser role: \`${player_role}\`\nUser team: \`${team}\`\nUser permissions: \`\`\`${permissions}\`\`\``)
+      .setDescription(
+        `User permission info:\nPlatform Auth Provider: \`${perm_data?.provider ?? "None"}\`\nUser role: \`${player_role}\`\nUser permissions: \`\`\`${permissions}\`\`\``,
+      )
       .setFooter({
         text: "/help for more info",
         iconURL: config.minecraft.API.SCF.logo,

@@ -52,7 +52,7 @@ class NetWorthCommand extends minecraftCommand {
       const museum = data.museum ? formatNumber(profile.types.museum?.total ?? 0) : "N/A";
 
       this.send(
-        `/${channel} ${username}'s Networth is ${networth} | Unsoulbound Networth: ${unsoulboundNetworth} | Purse: ${purse} | Bank: ${bank} | Museum: ${museum} | ${cache_message}`
+        `/${channel} ${username}'s Networth is ${networth} | Unsoulbound Networth: ${unsoulboundNetworth} | Purse: ${purse} | Bank: ${bank} | Museum: ${museum} | ${cache_message}`,
       );
     } catch (error) {
       console.log(error);

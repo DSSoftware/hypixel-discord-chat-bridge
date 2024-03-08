@@ -1,7 +1,8 @@
 const { uploadImage } = require("../../contracts/API/imgurAPI.js");
 const { demojify } = require("discord-emoji-converter");
-const config = require("../../../config.json");
+const config = require("../../../config.js");
 const axios = require("axios");
+const scfBridgeLock = require("../../../API/utils/scfBridgeLock.js");
 
 const sender_cache = new Map();
 
@@ -14,14 +15,14 @@ class MessageHandler {
     let response = {
       uuid: undefined,
       guild_id: undefined,
-      nick: undefined
+      nick: undefined,
     };
     try {
       let player_info = await Promise.all([
         axios.get(
-          `https://sky.dssoftware.ru/api.php?method=getLinked&discord_id=${discord_id}&api=${config.minecraft.API.SCF.key}`
+          `https://sky.dssoftware.ru/api.php?method=getLinked&discord_id=${discord_id}&api=${config.minecraft.API.SCF.key}`,
         ),
-      ]).catch((error) => { });
+      ]).catch((error) => {});
 
       player_info = player_info?.[0]?.data ?? {};
 
@@ -32,10 +33,8 @@ class MessageHandler {
       let uuid = player_info?.data?.uuid;
 
       let hypixel_info = await Promise.all([
-        axios.get(
-          `https://api.hypixel.net/player?key=${config.minecraft.API.hypixelAPIkey}&uuid=${uuid}`
-        ),
-      ]).catch((error) => { });
+        axios.get(`https://api.hypixel.net/player?key=${config.minecraft.API.hypixelAPIkey}&uuid=${uuid}`),
+      ]).catch((error) => {});
 
       hypixel_info = hypixel_info?.[0]?.data ?? {};
 
@@ -47,10 +46,8 @@ class MessageHandler {
       response.nick = hypixel_info?.player?.displayname;
 
       let guild_info = await Promise.all([
-        axios.get(
-          `https://api.hypixel.net/guild?key=${config.minecraft.API.hypixelAPIkey}&player=${uuid}`
-        ),
-      ]).catch((error) => { });
+        axios.get(`https://api.hypixel.net/guild?key=${config.minecraft.API.hypixelAPIkey}&player=${uuid}`),
+      ]).catch((error) => {});
 
       guild_info = guild_info?.[0]?.data ?? {};
 
@@ -65,8 +62,7 @@ class MessageHandler {
         last_save: Date.now(),
         data: response,
       };
-    }
-    catch (e) {
+    } catch (e) {
       console.log(e);
     }
   }
@@ -92,20 +88,27 @@ class MessageHandler {
 
       let sender_data = await this.getSenderData(message.author.id);
 
-      if (sender_data?.data?.nick == undefined) {
-        replication_client.channels.cache.get(config.discord.replication.channels.guild).send({
+      if (sender_data?.data?.nick == undefined && !message.author.bot) {
+        replication_client.channels.cache.get(message.channel.id).send({
           content: `<@${message.author.id}>`,
           embeds: [
             {
               color: 15548997,
-              description: "In order to use bridge, please use \`/scf-link\` command.\nThis way the messages will be sent with your Minecraft IGN.\nKeep in mind, your messages will **NOT** be sent otherwise."
+              description:
+                "In order to use bridge, please use `/" + `${config.minecraft.bot.replication_prefix}` + "link" + "` command.\nThis way the messages will be sent with your Minecraft IGN.\nKeep in mind, your messages will **NOT** be sent otherwise.",
             },
-          ]
+          ],
         });
         return;
       }
 
-      const real_username = sender_data?.data?.nick;
+      const isBridgeLocked = await scfBridgeLock.checkBridgelock(sender_data?.data?.uuid);
+      if(isBridgeLocked){
+        message.react("❌");
+        return;
+      }
+
+      const real_username = sender_data?.data?.nick ?? message.author.username;
 
       const content = this.stripDiscordContent(message).trim();
       if (content.length === 0 && message?.attachments?.size == 0) {
@@ -115,6 +118,13 @@ class MessageHandler {
       let chat = "Guild/Replication";
       if (message.channel.id == config.discord.replication.channels.debug) {
         chat = "Debug";
+      }
+      if (message.channel.id == config.discord.replication.channels.officer) {
+        chat = "Officer/Replication";
+      }
+
+      if (chat != "Debug" && message.author.bot) {
+        return;
       }
 
       this.saveGuildMessage(real_username, sender_data?.data?.uuid, sender_data?.data?.guild_id ?? "");
@@ -157,9 +167,12 @@ class MessageHandler {
   }
 
   async saveGuildMessage(username, uuid, guild) {
+    if (uuid == undefined) {
+      return;
+    }
     let message_send = await Promise.all([
       axios.get(
-        `https://sky.dssoftware.ru/api.php?method=saveGuildMessage&uuid=${uuid}&source=SBU&api=${config.minecraft.API.SCF.key}&nick=${username}&guild_id=${guild}`
+        `https://sky.dssoftware.ru/api.php?method=saveGuildMessage&uuid=${uuid}&source=SBU&api=${config.minecraft.API.SCF.key}&nick=${username}&guild_id=${guild}`,
       ),
     ]).catch((error) => {});
 
@@ -266,7 +279,11 @@ class MessageHandler {
     const isBot =
       message.author.bot && config.discord.channels.allowedBots.includes(message.author.id) === false ? true : false;
     const isValid = !isBot && (message.content.length > 0 || message?.attachments?.size > 0);
-    const validChannelIds = [config.discord.replication.channels.guild, config.discord.replication.channels.debug];
+    const validChannelIds = [
+      config.discord.replication.channels.guild,
+      config.discord.replication.channels.officer,
+      config.discord.replication.channels.debug,
+    ];
 
     return isValid && validChannelIds.includes(message.channel.id);
   }

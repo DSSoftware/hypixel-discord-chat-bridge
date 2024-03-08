@@ -1,6 +1,6 @@
 const cluster = require("node:cluster");
 const axios = require("axios");
-const config = require("./config.json");
+const config = require("./config.js");
 const Logger = require("./src/Logger.js");
 
 const webhook_url = config.minecraft.API.SCF.fail_webhook;
@@ -49,7 +49,7 @@ if (cluster.isPrimary) {
   }
 
   function checkInstructions() {
-    if(forced_shutdown){
+    if (forced_shutdown) {
       return;
     }
     let requested_state = 1;
@@ -68,8 +68,6 @@ if (cluster.isPrimary) {
         requested_state = 1;
       })
       .then(() => {
-        requested_state = 1;
-
         if (requested_state === 1) {
           if (!process_state) {
             reforkProcess();
@@ -91,9 +89,9 @@ if (cluster.isPrimary) {
 
   cluster.on("exit", function (worker, code, signal) {
     process_state = false;
-    if(code == 123){
+    if (code == 123) {
       var params = {
-        content: "<@&1172990412802248704>",
+        content: `<@&${config.discord.commands.notifyRole}>`,
         embeds: [
           {
             title: "Bot Stopped",
@@ -122,6 +120,11 @@ if (cluster.isPrimary) {
       for (const id in cluster.workers) {
         cluster.workers[id].kill();
       }
+    }
+
+    if (code == 5) {
+      Logger.warnMessage("The bot is deploying the new version...");
+      process.exit();
     }
     console.log(`Fork exited with exit code ${code}.`);
   });

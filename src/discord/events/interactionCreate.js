@@ -1,12 +1,15 @@
 const HypixelDiscordChatBridgeError = require("../../contracts/errorHandler.js");
-const config = require("../../../config.json");
-
+// eslint-disable-next-line no-unused-vars
 const { EmbedBuilder, CommandInteraction } = require("discord.js");
+const config = require("../../../config.js");
 const Logger = require("../.././Logger.js");
 const { ErrorEmbed } = require("../../contracts/embedHandler.js");
 
 module.exports = {
   name: "interactionCreate",
+  /**
+   * @param {CommandInteraction} interaction
+   */
   async execute(interaction) {
     try {
       if (interaction.isChatInputCommand()) {
@@ -33,8 +36,8 @@ module.exports = {
 
       const errrorMessage =
         error instanceof HypixelDiscordChatBridgeError
-        ? ""
-        : "Please try again later. The error has been sent to the Developers.\n\n";
+          ? ""
+          : "Please try again later. The error has been sent to the Developers.\n\n";
 
       const errorEmbed = new ErrorEmbed(`${errrorMessage}\`\`\`${error}\`\`\``);
 
@@ -48,11 +51,10 @@ module.exports = {
         const userID = interaction.user.id ?? "Unknown";
 
         const errorLog = new ErrorEmbed(
-          `Command: \`${commandName}\`\nOptions: \`${commandOptions}\`\nUser ID: \`${userID}\`\nUser: \`${username}\`\n\`\`\`${errorStack}\`\`\``
+          `Command: \`${commandName}\`\nOptions: \`${commandOptions}\`\nUser ID: \`${userID}\`\nUser: \`${username}\`\n\`\`\`${errorStack}\`\`\``,
         );
-
         interaction.client.channels.cache.get(config.discord.channels.loggingChannel).send({
-          content: `<@&${config.discord.commands.commandRole}>`,
+          content: `<@&${config.discord.commands.notifyRole}>`,
           embeds: [errorLog],
         });
       }
@@ -72,12 +74,5 @@ function isModerator(interaction) {
   const user = interaction.member;
   const userRoles = user.roles.cache.map((role) => role.id);
 
-  if (
-    config.discord.commands.checkPerms === true &&
-    !(userRoles.includes(config.discord.commands.commandRole) || config.discord.commands.users.includes(user.id))
-  ) {
-    return false;
-  }
-
-  return true;
+  return false;
 }

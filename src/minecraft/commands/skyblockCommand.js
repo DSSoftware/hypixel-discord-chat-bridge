@@ -69,7 +69,7 @@ class SkyblockCommand extends minecraftCommand {
       this.send(
         `/${channel} ${username}'s Level: ${
           data.profile.leveling?.experience ? data.profile.leveling.experience / 100 : 0
-        } | Senither Weight: ${senitherWeight} | Lily Weight: ${lilyWeight} | Skill Average: ${skillAverage} | Slayer: ${slayerXp} | Catacombs: ${catacombsLevel} | Class Average: ${classAverage} | Networth: ${networthValue} | Accessories: ${talismanCount} | Recombobulated: ${recombobulatedCount} | Enriched: ${enrichmentCount}`
+        } | Senither Weight: ${senitherWeight} | Lily Weight: ${lilyWeight} | Skill Average: ${skillAverage} | Slayer: ${slayerXp} | Catacombs: ${catacombsLevel} | Class Average: ${classAverage} | Networth: ${networthValue} | Accessories: ${talismanCount} | Recombobulated: ${recombobulatedCount} | Enriched: ${enrichmentCount}`,
       );
     } catch (error) {
       this.send(`/${channel} [ERROR] ${error}`);

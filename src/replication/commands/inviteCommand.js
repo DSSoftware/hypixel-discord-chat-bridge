@@ -1,10 +1,10 @@
 const HypixelDiscordChatBridgeError = require("../../contracts/errorHandler.js");
 const { EmbedBuilder } = require("discord.js");
-const config = require("../../../config.json");
+const config = require("../../../config.js");
 const AuthProvider = require("../AuthProvider.js");
 
 module.exports = {
-  name: "scf-invite",
+  name: `${config.minecraft.bot.replication_prefix}` + "invite",
   description: "Invites the given user to the guild.",
   options: [
     {
@@ -17,7 +17,7 @@ module.exports = {
 
   execute: async (interaction) => {
     const user = interaction.member;
-    const permission_required = 'invite';
+    const permission_required = "invite";
 
     let permission = false;
 
@@ -25,7 +25,9 @@ module.exports = {
     permission = (await AuthData.permissionInfo(user)).permissions?.[permission_required] ?? false;
 
     if (!permission) {
-      throw new HypixelDiscordChatBridgeError("You do not have permission to use this command, or the Permission API is Down.");
+      throw new HypixelDiscordChatBridgeError(
+        "You do not have permission to use this command, or the Permission API is Down.",
+      );
     }
 
     const name = interaction.options.getString("name");

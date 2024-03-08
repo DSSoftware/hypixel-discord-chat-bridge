@@ -8,7 +8,7 @@ class AccessoriesCommand extends minecraftCommand {
     super(minecraft);
 
     this.name = "accessories";
-    this.aliases = ["acc", "talismans", "talisman"];
+    this.aliases = ["acc", "talismans", "talisman", "mp"];
     this.description = "Accessories of specified user.";
     this.options = [
       {
@@ -42,7 +42,7 @@ class AccessoriesCommand extends minecraftCommand {
       this.send(
         `/${channel} ${username}'s Accessories: ${talismans?.total ?? 0} (${rarities}), Recombed: ${
           talismans?.recombed ?? 0
-        }, Enriched: ${talismans?.enriched ?? 0} | Highest MP: ${highest_mp}`
+        }, Enriched: ${talismans?.enriched ?? 0} | Highest MP: ${highest_mp}`,
       );
     } catch (error) {
       this.send(`/${channel} [ERROR] ${error}`);

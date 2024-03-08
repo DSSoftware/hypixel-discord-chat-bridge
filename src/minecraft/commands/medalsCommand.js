@@ -21,7 +21,7 @@ class MedalsCommand extends minecraftCommand {
     ];
   }
 
-  getCropMedals(crop_id, crop_name, unique_brackets, personal_bests){
+  getCropMedals(crop_id, crop_name, unique_brackets, personal_bests) {
     let color = "§8";
     let brackets = "§c○§f○§6○§3○§b○";
     let personal_best = "N/A";
@@ -34,33 +34,33 @@ class MedalsCommand extends minecraftCommand {
     let diamonds = unique_brackets?.diamond ?? [];
 
     // BRONZE BRACKET CHECK
-    if(bronzes.includes(crop_id)){
+    if (bronzes.includes(crop_id)) {
       color = "§c";
       brackets = "§c●§f○§6○§3○§b○";
     }
 
     // SILVER BRACKET CHECK
-    if(silvers.includes(crop_id)){
+    if (silvers.includes(crop_id)) {
       color = "§f";
       brackets = "§c●§f●§6○§3○§b○";
     }
 
     // GOLD BRACKET CHECK
-    if(golds.includes(crop_id)){
+    if (golds.includes(crop_id)) {
       color = "§6";
       brackets = "§c●§f●§6●§3○§b○";
       gold = 1;
     }
 
     // PLATINUM BRACKET CHECK
-    if(platinums.includes(crop_id)){
+    if (platinums.includes(crop_id)) {
       color = "§3";
       brackets = "§c●§f●§6●§3●§b○";
       gold = 1;
     }
 
     // DIAMOND BRACKET CHECK
-    if(diamonds.includes(crop_id)){
+    if (diamonds.includes(crop_id)) {
       color = "§b";
       brackets = "§c●§f●§6●§3●§b●";
       gold = 1;
@@ -70,7 +70,7 @@ class MedalsCommand extends minecraftCommand {
 
     let response = {
       display: `§7${color}${crop_name}§7: ${brackets} §7(Best: ${personal_best})§7`,
-      gold: gold
+      gold: gold,
     };
     return response;
   }
@@ -102,16 +102,16 @@ class MedalsCommand extends minecraftCommand {
       console.log(medals_inv, unique_brackets, Object.entries(contests).length, personal_bests);
 
       let crops = {
-        'WHEAT': "Wheat",
-        'CARROT_ITEM': "Carrot",
-        'POTATO_ITEM': "Potato",
-        'PUMPKIN': "Pumpkin",
-        'MELON': "Melon",
-        'MUSHROOM_COLLECTION': "Mushroom",
-        'CACTUS': "Cactus",
-        'SUGAR_CANE': "Sugar Cane",
-        'NETHER_STALK': "Nether Wart",
-        'INK_SACK:3': "Cocoa Beans",
+        WHEAT: "Wheat",
+        CARROT_ITEM: "Carrot",
+        POTATO_ITEM: "Potato",
+        PUMPKIN: "Pumpkin",
+        MELON: "Melon",
+        MUSHROOM_COLLECTION: "Mushroom",
+        CACTUS: "Cactus",
+        SUGAR_CANE: "Sugar Cane",
+        NETHER_STALK: "Nether Wart",
+        "INK_SACK:3": "Cocoa Beans",
       };
 
       Object.entries(crops).forEach((element) => {
@@ -127,12 +127,14 @@ class MedalsCommand extends minecraftCommand {
       Lore.push(`§f`);
 
       Lore.unshift(`§f`);
-      Lore.unshift(`§7Medals inventory: §c${medals_inv.bronze ?? 0}§7 | §f${medals_inv.silver ?? 0}§7 | §6${medals_inv.gold ?? 0}§7.`);
+      Lore.unshift(
+        `§7Medals inventory: §c${medals_inv.bronze ?? 0}§7 | §f${medals_inv.silver ?? 0}§7 | §6${medals_inv.gold ?? 0}§7.`,
+      );
       Lore.unshift(`§f`);
       Lore.unshift(`§7Unique golds: §6${golds}§7/10.`);
       Lore.unshift(`§7Participated in §6${Object.entries(contests).length}§7 contests.`);
       Lore.unshift(`§f`);
-      
+
       const renderedItem = await renderLore(Name, Lore);
       const upload = await uploadImage(renderedItem);
       this.send(`/${channel} ${username}'s Jacobs Contest stats: ${upload.data.link}.`);

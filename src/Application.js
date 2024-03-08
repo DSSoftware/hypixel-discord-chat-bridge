@@ -2,7 +2,7 @@ const DiscordManager = require("./discord/DiscordManager.js");
 const MinecraftManager = require("./minecraft/MinecraftManager.js");
 const webManager = require("./web/WebsiteManager.js");
 const ReplicationManager = require("./replication/ReplicationManager.js");
-const config = require("../config.json");
+const config = require("../config.js");
 
 class Application {
   async register() {
@@ -27,6 +27,7 @@ class Application {
   async connect() {
     this.discord.connect();
     this.minecraft.connect();
+    this.web.connect();
     if (config.discord.replication.enabled) {
       this.replication.connect();
     }

@@ -1,7 +1,7 @@
 const { getSkyblockCalendar } = require("../../../API/functions/getCalendar.js");
 const minecraftCommand = require("../../contracts/minecraftCommand.js");
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-const config = require("../../../config.json");
+const config = require("../../../config.js");
 const axios = require("axios");
 
 if (config.minecraft.skyblockEventsNotifications.enabled) {
@@ -27,7 +27,7 @@ if (config.minecraft.skyblockEventsNotifications.enabled) {
         if (event == "JACOBS_CONTEST") {
           const { data: jacobResponse } = await axios.get("https://dawjaw.net/jacobs");
           const jacobCrops = jacobResponse.find(
-            (crop) => crop.time >= Math.floor(eventData.events[0].start_timestamp / 1000)
+            (crop) => crop.time >= Math.floor(eventData.events[0].start_timestamp / 1000),
           );
 
           if (jacobCrops?.crops !== undefined) {

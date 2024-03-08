@@ -1,6 +1,6 @@
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const helperFunctions = require("./helperFunctions.js");
-const config = require("../../config.json");
+const config = require("../../config.js");
 
 class minecraftCommand {
   constructor(minecraft) {
@@ -41,7 +41,7 @@ class minecraftCommand {
         await delay(250);
         return this.send(
           `${message} - ${helperFunctions.generateID(config.minecraft.bot.messageRepeatBypassLength)}`,
-          n + 1
+          n + 1,
         );
       }
     };

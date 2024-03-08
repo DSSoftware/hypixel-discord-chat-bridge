@@ -1,6 +1,6 @@
 const { getMuseum } = require("./getMuseum.js");
 const { isUuid } = require("../utils/uuid.js");
-const config = require("../../config.json");
+const config = require("../../config.js");
 const axios = require("axios");
 const { getUUID } = require("../../src/contracts/API/PlayerDBAPI.js");
 

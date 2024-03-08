@@ -28,7 +28,7 @@ class SkywarsCommand extends minecraftCommand {
       const { wins, kills, level, KDRatio, WLRatio, winstreak } = player.stats.skywars;
 
       this.send(
-        `/${channel} [${level}✫] ${player.nickname} | Kills: ${kills} KDR: ${KDRatio} | Wins: ${wins} WLR: ${WLRatio} | WS: ${winstreak}`
+        `/${channel} [${level}✫] ${player.nickname} | Kills: ${kills} KDR: ${KDRatio} | Wins: ${wins} WLR: ${WLRatio} | WS: ${winstreak}`,
       );
     } catch (error) {
       this.send(
@@ -36,7 +36,7 @@ class SkywarsCommand extends minecraftCommand {
           .toString()
           .replace("[hypixel-api-reborn] ", "")
           .replace("For help join our Discord Server https://discord.gg/NSEBNMM", "")
-          .replace("Error:", "[ERROR]")}`
+          .replace("Error:", "[ERROR]")}`,
       );
     }
   }

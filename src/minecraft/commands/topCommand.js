@@ -1,7 +1,7 @@
 const minecraftCommand = require("../../contracts/minecraftCommand.js");
 const { getUUID } = require("../../contracts/API/PlayerDBAPI.js");
 const axios = require("axios");
-const config = require("../../../config.json");
+const config = require("../../../config.js");
 
 class AccessoriesCommand extends minecraftCommand {
   constructor(minecraft) {
@@ -33,12 +33,12 @@ class AccessoriesCommand extends minecraftCommand {
       let overall_flag = 0;
       let display_flag = "(GUILD)";
       let passed_username = this.getArgs(message)[0];
-      if(this.getArgs(message)[0] == "overall"){
+      if (this.getArgs(message)[0] == "overall") {
         overall_flag = 1;
         passed_username = false;
         display_flag = "(OVERALL)";
-      } 
-      if(this.getArgs(message)[1] == "overall"){
+      }
+      if (this.getArgs(message)[1] == "overall") {
         overall_flag = 1;
         display_flag = "(OVERALL)";
       }
@@ -49,18 +49,20 @@ class AccessoriesCommand extends minecraftCommand {
 
       let placement_info = await Promise.all([
         axios.get(
-          `https://sky.dssoftware.ru/api.php?method=getMessagesSent&uuid=${player_uuid}&api=${config.minecraft.API.SCF.key}&overall=${overall_flag}`
+          `https://sky.dssoftware.ru/api.php?method=getMessagesSent&uuid=${player_uuid}&api=${config.minecraft.API.SCF.key}&overall=${overall_flag}`,
         ),
       ]).catch((error) => {});
 
       placement_info = placement_info[0].data ?? {};
 
       if (placement_info.data.place == null || placement_info.data.place == undefined) {
-        return this.send(`/${channel} Unable to retrieve place, maybe the player sent no messages? Try running !top <username> overall. ${display_flag}`);
+        return this.send(
+          `/${channel} Unable to retrieve place, maybe the player sent no messages? Try running !top <username> overall. ${display_flag}`,
+        );
       }
 
       this.send(
-        `/${channel} ${username}'s place: ${placement_info.data.place} | Messages sent: ${placement_info.data.count} ${display_flag}`
+        `/${channel} ${username}'s place: ${placement_info.data.place} | Messages sent: ${placement_info.data.count} ${display_flag}`,
       );
     } catch (error) {
       this.send(`/${channel} [ERROR] ${error}`);

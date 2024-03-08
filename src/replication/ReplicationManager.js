@@ -5,7 +5,7 @@ const messageToImage = require("../contracts/messageToImage.js");
 const MessageHandler = require("./handlers/MessageHandler.js");
 const StateHandler = require("./handlers/StateHandler.js");
 const CommandHandler = require("./CommandHandler.js");
-const config = require("../../config.json");
+const config = require("../../config.js");
 const Logger = require("../Logger.js");
 const { kill } = require("node:process");
 const path = require("node:path");
@@ -87,6 +87,11 @@ class ReplicationManager extends CommunicationBridge {
       guildRank = "Inter-Discord";
     }
 
+    if (chat == "Officer/InterDiscord") {
+      chat = "Officer"; // Inter Discord Communication Support
+      guildRank = "Inter-Discord";
+    }
+
     if (chat == "Debug") {
       return;
     }
@@ -108,7 +113,9 @@ class ReplicationManager extends CommunicationBridge {
 
     const channel = await this.stateHandler.getChannel(chat || "Guild");
     if (channel === undefined) {
-      //Logger.errorMessage(`Channel ${chat} not found!`);
+      if ((chat = "debugChannel")) {
+        return;
+      }
       return;
     }
 

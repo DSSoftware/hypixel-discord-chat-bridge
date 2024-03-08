@@ -1,5 +1,5 @@
 const HypixelDiscordChatBridgeError = require("../../contracts/errorHandler.js");
-const config = require("../../../config.json");
+const config = require("../../../config.js");
 const { EmbedBuilder } = require("discord.js");
 const Logger = require("../.././Logger.js");
 
@@ -42,10 +42,10 @@ module.exports = {
           .setTitle("Error")
           .setDescription(
             `Command: \`${interaction.commandName}\`\nOptions: \`${JSON.stringify(
-              interaction.options.data
+              interaction.options.data,
             )}\`\nUser ID: \`${interaction.user.id}\`\nUser: \`${
               interaction.user.username ?? interaction.user.tag
-            }\`\n\`\`\`${error.stack}\`\`\``
+            }\`\n\`\`\`${error.stack}\`\`\``,
           )
           .setFooter({
             text: "/help [command] for more information",
@@ -53,7 +53,7 @@ module.exports = {
           });
 
         client.channels.cache.get(config.discord.channels.loggingChannel).send({
-          content: `<@&${config.discord.commands.commandRole}>`,
+          content: `<@&${config.discord.commands.notifyRole}>`,
           embeds: [errorLog],
         });
       }

@@ -1,11 +1,11 @@
 const HypixelDiscordChatBridgeError = require("../../contracts/errorHandler.js");
 const { EmbedBuilder } = require("discord.js");
-const config = require("../../../config.json");
+const config = require("../../../config.js");
 const axios = require("axios");
 const AuthProvider = require("../AuthProvider.js");
 
 module.exports = {
-  name: "scf-link",
+  name: `${config.minecraft.bot.guild_prefix}` + "link",
   description: "Links the correct user account for the bridge.",
   options: [
     {
@@ -23,7 +23,7 @@ module.exports = {
 
     let data = await Promise.all([
       axios.get(
-        `https://sky.dssoftware.ru/api.php?method=saveLinked&discord_id=${user.id}&nick=${minecraft_nick}&api=${config.minecraft.API.SCF.key}&tag=${user.user.username}`
+        `https://sky.dssoftware.ru/api.php?method=saveLinked&discord_id=${user.id}&nick=${minecraft_nick}&api=${config.minecraft.API.SCF.key}&tag=${user.user.username}`,
       ),
     ]).catch((error) => {
       console.log(error);
@@ -32,7 +32,7 @@ module.exports = {
 
     let result = data[0].data ?? {};
 
-    if((result?.response ?? "FAULT") == "FAULT"){
+    if ((result?.response ?? "FAULT") == "FAULT") {
       throw new HypixelDiscordChatBridgeError(result?.info ?? "Failed to connect to API.");
     }
 

@@ -7,9 +7,13 @@ const eventHandler = require("../../contracts/EventHandler.js");
 const getWeight = require("../../../API/stats/weight.js");
 const messages = require("../../../messages.json");
 const { EmbedBuilder } = require("discord.js");
-const config = require("../../../config.json");
+const config = require("../../../config.js");
 const Logger = require("../../Logger.js");
 const axios = require("axios");
+const Skykings = require("../../../API/utils/skykings");
+const Blacklist = require("../../../API/utils/blacklist");
+const scfBlacklist = require("../../../API/utils/scfBlacklist");
+const getDungeons = require("../../../API/stats/dungeons.js");
 
 class StateHandler extends eventHandler {
   constructor(minecraft, command, discord) {
@@ -45,41 +49,17 @@ class StateHandler extends eventHandler {
       return bot.chat("\u00a7");
     }
 
-    if (this.isPartyMessage(message) && config.minecraft.fragBot.enabled === true) {
-      const username = message.substr(54).startsWith("[")
-        ? message.substr(54).split(" ")[1].trim()
-        : message.substr(54).split(" ")[0].trim();
-
-      const { blacklist, blacklisted, whitelist, whitelisted } = config.minecraft.fragBot;
-      if (blacklist || whitelist) {
-        const uuid = await getUUID(username);
-
-        if (config.minecraft.fragBot.blacklist === true) {
-          if (blacklisted.includes(username) || blacklisted.includes(uuid)) {
-            return;
-          }
-        }
-
-        const members = await hypixel
-          .getGuild("player", bot.username)
-          .then(async (guild) => guild.members.map((member) => member.uuid));
-        if ((config.minecraft.fragBot.whitelist && whitelisted.includes(username)) || members.includes(uuid)) {
-          this.send(`/party accept ${username}`);
-          await delay(Math.floor(Math.random() * (6900 - 4200 + 1)) + 4200);
-          this.send(`/party leave`);
-        }
-      } else {
-        this.send(`/party accept ${username}`);
-        await delay(Math.floor(Math.random() * (6900 - 4200 + 1)) + 4200);
-        this.send(`/party leave`);
-      }
-    }
-
     if (this.isRequestMessage(message)) {
-      const username = replaceAllRanks(
-        message.split("has")[0].replaceAll("-----------------------------------------------------\n", "")
+      let username = replaceAllRanks(
+        message.split("has")[0].replaceAll("-----------------------------------------------------\n", ""),
       );
-
+      try {
+        username = username.trim();
+      }
+      catch (e) {
+        bot.chat(`/oc Somehow bot failed trim the player's IGN. Accept the invite manually!`);
+        return;
+      }
       var is_banned = false;
       let uuid;
       try {
@@ -88,86 +68,124 @@ class StateHandler extends eventHandler {
           throw "Failed to obtain UUID";
         }
       } catch (e) {
-        bot.chat(`/oc Could not obtain UUID for that player!`);
+        bot.chat(`/oc Could not obtain UUID for ${username}. Please check manually!`);
         return;
-      }
-      if (config.minecraft.API.SCF.enabled) {
-        try {
-          let player_banned = await Promise.all([
-            axios.get(
-              `https://sky.dssoftware.ru/api.php?method=isBanned&uuid=${uuid}&api=${config.minecraft.API.SCF.key}`
-            ),
-          ]).catch((error) => {});
-
-          player_banned = player_banned[0].data ?? {};
-
-          if (player_banned.data === true) {
-            is_banned = true;
-            bot.chat(
-              `/oc ${username} was banned from the guild by admin, therefore will not be accepted. Please, do not accept this request or you may get demoted.`
-            );
-
-            this.minecraft.broadcastHeadedEmbed({
-              message: "Banned player (" + username + ") tried to join the guild.",
-              title: `Banned player`,
-              icon: `https://mc-heads.net/avatar/${username}`,
-              color: 15548997,
-              channel: "Officer",
-            });
-
-            await delay(10000);
-
-            bot.chat(`/guild kick ${username} You were banned from this guild. Submit an appeal to rejoin.`);
-            return;
-          }
-        } catch (e) {
-          bot.chat(`/oc Could not check whether ${username} was banned from the guild or not...`);
-        }
       }
 
       if (config.minecraft.guildRequirements.enabled) {
-        const [player, profile] = await Promise.all([hypixel.getPlayer(uuid), getLatestProfile(uuid)]);
+        let player, profile;
+        try {
+          player = await hypixel.getPlayer(uuid);
+          profile = await getLatestProfile(uuid);
+        }
+        catch (e) {
+          bot.chat(`/oc Could not obtain ${username}'s data. Please check manually!`);
+          return;
+        }
         let meetRequirements = false;
 
-        const skyblockLevel = (profile.profile?.leveling?.experience || 0) / 100 ?? 0;
+        const skyblockLevel = (profile?.profile?.leveling?.experience || 0) / 100 ?? 0;
 
-        if (skyblockLevel > config.minecraft.guildRequirements.requirements.skyblockLevel) {
-          meetRequirements = true;
-        }
+        const dungeonsStats = getDungeons(profile.playerRes, profile.profile);
+        const catacombsLevel = Math.round(dungeonsStats?.catacombs?.skill?.levelWithProgress || 0);
 
-        bot.chat(
-          `/oc ${username} ${
-            meetRequirements ? "meets" : "Doesn't meet"
-          } Requirements. SB Level: ${skyblockLevel.toLocaleString()}`
-        );
-        await delay(1000);
+        const skykings_scammer = await Skykings.lookupUUID(uuid);
+        const blacklisted = await Blacklist.checkBlacklist(uuid);
+        const scf_blacklisted = await scfBlacklist.checkBlacklist(uuid);
 
-        if (meetRequirements === true) {
-          if (config.minecraft.guildRequirements.autoAccept === true) {
-            bot.chat(`/guild accept ${username}`);
-          }
+        let skill_requirements = true;
 
-          const statsEmbed = new EmbedBuilder()
+        skill_requirements = skill_requirements && (skyblockLevel >= config.minecraft.guildRequirements.requirements.skyblockLevel);
+        skill_requirements = skill_requirements && (catacombsLevel >= config.minecraft.guildRequirements.requirements.catacombsLevel);
+
+        const statsEmbed = new EmbedBuilder()
             .setColor(2067276)
             .setTitle(`${player.nickname} has requested to join the Guild!`)
             .setDescription(`**Hypixel Network Level**\n${player.level}\n`)
-            .addFields({
-              name: "Skyblock Level",
-              value: `${skyblockLevel.toLocaleString()}`,
-              inline: true,
-            })
+            .addFields(
+              {
+                name: "Skyblock Level",
+                value: `\`${skyblockLevel.toLocaleString()}\``,
+                inline: true,
+              },
+              {
+                name: "Catacombs Level",
+                value: `\`${catacombsLevel.toLocaleString()}\``,
+                inline: true,
+              },
+              {
+                name: "Passed Skill Requirements",
+                value: skill_requirements ? ":white_check_mark:" : ":x:",
+                inline: true,
+              },
+              {
+                name: "Skykings Flag",
+                value: `\`${skykings_scammer}\``,
+                inline: true,
+              },
+              {
+                name: "Blacklist Flag",
+                value: `\`${blacklisted}\``,
+                inline: true,
+              },
+              {
+                name: "SCF Flag",
+                value: `\`${scf_blacklisted}\``,
+                inline: true,
+              },
+            )
             .setThumbnail(`https://www.mc-heads.net/avatar/${player.nickname}`)
             .setFooter({
               text: `/help [command] for more information`,
               iconURL: config.minecraft.API.SCF.logo,
             });
 
-          await client.channels.cache.get(`${config.discord.channels.loggingChannel}`).send({ embeds: [statsEmbed] });
+        await client.channels.cache.get(`${config.discord.channels.loggingChannel}`).send({ embeds: [statsEmbed] });
 
-          if (config.minecraft.API.SCF.enabled) {
-            await client.channels.cache
-              .get(`${config.discord.channels.officerChannel}`)
-              .send(`<@&1172990412802248704>\n${player.nickname} has joined the guild!`);
+        if (
+          skill_requirements &&
+          skykings_scammer !== true &&
+          blacklisted !== true &&
+          scf_blacklisted !== true
+        ) {
+          meetRequirements = true;
+        }
+        else {
+          if (skykings_scammer || blacklisted || scf_blacklisted) {
+            try {
+              bot.chat(
+                `/oc ${username} was banned from the guild by admin, therefore will not be accepted. Please, do not accept this request or you may get demoted.`,
+              );
+
+              this.minecraft.broadcastHeadedEmbed({
+                message: "Banned player (" + username + ") tried to join the guild.",
+                title: `Banned player`,
+                icon: `https://mc-heads.net/avatar/${username}`,
+                color: 15548997,
+                channel: "Logger",
+              });
+
+              await delay(10000);
+
+              bot.chat(`/guild kick ${username} You were banned from this guild. Submit an appeal to rejoin.`);
+              return;
+            }
+            catch(e){
+              bot.chat(`/oc Something went wrong while trying to kick a banned player...`);
+              return;
+            }
+          }
+        }
+
+        bot.chat(
+          `/oc ${username} ${meetRequirements ? "meets" : "Doesn't meet"
+          } Requirements. SB Level: ${skyblockLevel.toLocaleString()} | Cata Level: ${catacombsLevel.toLocaleString()} | Scammer: ${skykings_scammer.toLocaleString()} | Blacklist: ${blacklisted.toLocaleString()}`,
+        );
+        await delay(1000);
+
+        if (meetRequirements === true) {
+          if (config.minecraft.guildRequirements.autoAccept === true) {
+            bot.chat(`/guild accept ${username}`);
           }
         }
       }
@@ -200,16 +218,88 @@ class StateHandler extends eventHandler {
     }
 
     if (this.isJoinMessage(message)) {
-      const username = message
+      let username = message
         .replace(/\[(.*?)\]/g, "")
         .trim()
         .split(/ +/g)[0];
+      try {
+        username = username.trim();
+      }
+      catch (e) {
+        console.log(e);
+      }
+
+      let uuid;
+      try {
+        uuid = await getUUID(username);
+      } catch (e) {
+        console.log(e);
+      }
+
+      const skykings_scammer = await Skykings.lookupUUID(uuid);
+      const blacklisted = await Blacklist.checkBlacklist(uuid);
+      const scf_blacklisted = await scfBlacklist.checkBlacklist(uuid);
+
+      const statsEmbed = new EmbedBuilder()
+            .setColor(2067276)
+            .setTitle(`${username} has joined the Guild!`)
+            .addFields(
+              {
+                name: "Skykings Flag",
+                value: `\`${skykings_scammer}\``,
+                inline: true,
+              },
+              {
+                name: "Blacklist Flag",
+                value: `\`${blacklisted}\``,
+                inline: true,
+              },
+              {
+                name: "SCF Flag",
+                value: `\`${scf_blacklisted}\``,
+                inline: true,
+              },
+            )
+            .setThumbnail(`https://www.mc-heads.net/avatar/${username}`)
+            .setFooter({
+              text: `/help [command] for more information`,
+              iconURL: config.minecraft.API.SCF.logo,
+            });
+
+      await client.channels.cache.get(`${config.discord.channels.loggingChannel}`).send({ embeds: [statsEmbed] });
+
+      if (
+        skykings_scammer === true ||
+        blacklisted === true ||
+        scf_blacklisted === true
+      ) {
+        this.minecraft.broadcastHeadedEmbed({
+          message: "Banned player (" + username + ") tried to join the guild.",
+          title: `Banned player`,
+          icon: `https://mc-heads.net/avatar/${username}`,
+          color: 15548997,
+          channel: "Logger",
+        });
+
+        bot.chat(`/guild kick ${username} You were banned from this guild. Submit an appeal to rejoin.`);
+        
+        return;
+      }
+
       await delay(1000);
+
       bot.chat(
         `/gc ${replaceVariables(messages.guildJoinMessage, {
           prefix: config.minecraft.bot.prefix,
-        })}`
+        })}`,
       );
+
+      if (process.env.notify_enabled) {
+        await client.channels.cache
+          .get(`${config.discord.channels.loggingChannel}`)
+          .send(`${process.env.notify_content}\n${username} has joined the guild!`);
+      }
+
       return [
         this.minecraft.broadcastHeadedEmbed({
           message: replaceVariables(messages.joinMessage, { username }),
@@ -248,7 +338,7 @@ class StateHandler extends eventHandler {
               title: `Member Unverification`,
               icon: `https://mc-heads.net/avatar/${username}`,
               color: 15548997,
-              channel: "Officer",
+              channel: "Logger",
             });
           })
           .on("error", (err) => {
@@ -257,7 +347,7 @@ class StateHandler extends eventHandler {
               title: `Member Unverification`,
               icon: `https://mc-heads.net/avatar/${username}`,
               color: 15548997,
-              channel: "Officer",
+              channel: "Logger",
             });
           });
       }
@@ -300,7 +390,7 @@ class StateHandler extends eventHandler {
               title: `Member Unverification`,
               icon: `https://mc-heads.net/avatar/${username}`,
               color: 15548997,
-              channel: "Officer",
+              channel: "Logger",
             });
           })
           .on("error", (err) => {
@@ -309,7 +399,7 @@ class StateHandler extends eventHandler {
               title: `Member Unverification`,
               icon: `https://mc-heads.net/avatar/${username}`,
               color: 15548997,
-              channel: "Officer",
+              channel: "Logger",
             });
           });
       }
@@ -817,20 +907,15 @@ class StateHandler extends eventHandler {
 
     let message_send = await Promise.all([
       axios.get(
-        `https://sky.dssoftware.ru/api.php?method=saveGuildMessage&uuid=${uuid}&source=minecraft&api=${config.minecraft.API.SCF.key}&nick=${username}&guild_id=${guild}`
+        `https://sky.dssoftware.ru/api.php?method=saveGuildMessage&uuid=${uuid}&source=minecraft&api=${config.minecraft.API.SCF.key}&nick=${username}&guild_id=${guild}`,
       ),
-    ]).catch((error) => {});
+    ]).catch((error) => { });
 
     return;
   }
 
   isDiscordMessage(message) {
     const isDiscordMessage = /^(?<username>(?!https?:\/\/)[^\s»:>]+)\s*[»:>]\s*(?<message>.*)/;
-
-    const match = message.match(isDiscordMessage);
-    if (match && ["Party", "Guild", "Officer"].includes(match.groups.username)) {
-      return false;
-    }
 
     return isDiscordMessage.test(message);
   }
@@ -958,7 +1043,7 @@ class StateHandler extends eventHandler {
       (message.includes("You must be the Guild Master to use that command!") ||
         message.includes("You do not have permission to use this command!") ||
         message.includes(
-          "I'm sorry, but you do not have permission to perform this command. Please contact the server administrators if you believe that this is in error."
+          "I'm sorry, but you do not have permission to perform this command. Please contact the server administrators if you believe that this is in error.",
         ) ||
         message.includes("You cannot mute a guild member with a higher guild rank!") ||
         message.includes("You cannot kick this player!") ||

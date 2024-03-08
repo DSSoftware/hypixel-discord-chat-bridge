@@ -185,7 +185,7 @@ class TrophyFishCommand extends minecraftCommand {
         let display_diamonds = data.catches.diamond > 0 ? `§b${data.catches.diamond}` : "§c✖";
 
         Lore.push(
-          `${correct_display_name}§7: ${display_bronzes} §7| ${display_silvers} §7| ${display_golds} §7| ${display_diamonds} §7(${data.caught})§f`
+          `${correct_display_name}§7: ${display_bronzes} §7| ${display_silvers} §7| ${display_golds} §7| ${display_diamonds} §7(${data.caught})§f`,
         );
       });
 

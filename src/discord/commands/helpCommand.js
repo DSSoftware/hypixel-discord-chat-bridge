@@ -1,10 +1,10 @@
 const HypixelDiscordChatBridgeError = require("../../contracts/errorHandler.js");
 const { EmbedBuilder } = require("discord.js");
-const config = require("../../../config.json");
+const config = require("../../../config.js");
 const fs = require("fs");
 
 module.exports = {
-  name: "help",
+  name: `${config.minecraft.bot.guild_prefix}` + "help",
   description: "Shows help menu.",
   options: [
     {
@@ -53,7 +53,7 @@ module.exports = {
             name: "**Discord**: ",
             value: `${discordCommands}`,
             inline: true,
-          }
+          },
         )
         .setFooter({
           text: "/help [command] for more information",

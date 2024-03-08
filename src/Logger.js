@@ -6,13 +6,13 @@ async function discordMessage(message) {
 
 async function replicationInfo(message) {
   return console.log(
-    chalk.bgBlueBright.black(`[${await getCurrentTime()}] Replication >`) + " " + chalk.blueBright(message)
+    chalk.bgBlueBright.black(`[${await getCurrentTime()}] Replication >`) + " " + chalk.blueBright(message),
   );
 }
 
 async function minecraftMessage(message) {
   return console.log(
-    chalk.bgGreenBright.black(`[${await getCurrentTime()}] Minecraft >`) + " " + chalk.greenBright(message)
+    chalk.bgGreenBright.black(`[${await getCurrentTime()}] Minecraft >`) + " " + chalk.greenBright(message),
   );
 }
 

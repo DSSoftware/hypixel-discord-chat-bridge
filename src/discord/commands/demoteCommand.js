@@ -1,10 +1,10 @@
 const HypixelDiscordChatBridgeError = require("../../contracts/errorHandler.js");
 const { EmbedBuilder } = require("discord.js");
-const config = require("../../../config.json");
+const config = require("../../../config.js");
 const AuthProvider = require("../AuthProvider.js");
 
 module.exports = {
-  name: "demote",
+  name: `${config.minecraft.bot.guild_prefix}` + "demote",
   description: "Demotes the given user by one guild rank.",
   options: [
     {
@@ -18,7 +18,7 @@ module.exports = {
   execute: async (interaction) => {
     const user = interaction.member;
     const executor_id = user.id;
-    const permission_required = 'mc_demote';
+    const permission_required = "mc_demote";
 
     let permission = false;
 
@@ -26,7 +26,9 @@ module.exports = {
     permission = (await AuthData.permissionInfo(user)).permissions?.[permission_required] ?? false;
 
     if (!permission) {
-      throw new HypixelDiscordChatBridgeError("You do not have permission to use this command, or the Permission API is Down.");
+      throw new HypixelDiscordChatBridgeError(
+        "You do not have permission to use this command, or the Permission API is Down.",
+      );
     }
 
     const name = interaction.options.getString("name");

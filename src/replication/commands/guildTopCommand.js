@@ -1,8 +1,8 @@
 const { EmbedBuilder } = require("discord.js");
-const config = require("../../../config.json");
+const config = require("../../../config.js");
 
 module.exports = {
-  name: "scf-guildtop",
+  name: `${config.minecraft.bot.replication_prefix}` + "guildtop",
   description: "Top 10 members with the most guild experience.",
   options: [
     {

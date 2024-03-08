@@ -40,7 +40,7 @@ class StateHandler extends eventHandler {
     Logger.warnMessage(`Minecraft bot has been kicked from the server for "${reason}"`);
 
     this.loginAttempts++;
-    if(this.loginAttempts >= 5){
+    if (this.loginAttempts >= 5) {
       process.exit(123);
     }
   }

@@ -4,7 +4,7 @@ const StateHandler = require("./handlers/StateHandler.js");
 const ErrorHandler = require("./handlers/ErrorHandler.js");
 const ChatHandler = require("./handlers/ChatHandler.js");
 const CommandHandler = require("./CommandHandler.js");
-const config = require("../../config.json");
+const config = require("../../config.js");
 const mineflayer = require("mineflayer");
 const Logger = require("../Logger.js");
 const Filter = require("bad-words");
@@ -26,6 +26,7 @@ class MinecraftManager extends CommunicationBridge {
 
   connect() {
     global.bot = this.createBotConnection();
+    global.debug_chat_handler = this.chatHandler;
     this.bot = bot;
 
     this.errorHandler.registerEvents(this.bot);
@@ -73,7 +74,10 @@ class MinecraftManager extends CommunicationBridge {
       return this.bot.chat(message);
     }
 
-    const chat = channel === config.discord.channels.officerChannel ? "/oc" : "/gc";
+    const chat =
+      channel === config.discord.channels.officerChannel || channel === config.discord.replication.channels.officer
+        ? "/oc"
+        : "/gc";
 
     if (message.length > 750) {
       return this.bot.chat(`${chat} [ERROR] Failed to send the message, as it was longer than 750 symbols!`);
@@ -115,15 +119,17 @@ class MinecraftManager extends CommunicationBridge {
       bot.on("message", messageListener);
       this.bot.chat(`${chat} ${message_chunk}`);
       await delay(1000);
+      if (chat == "/oc") {
+        setTimeout(() => {
+          bot.removeListener("message", messageListener);
+          if (successfullySent === true) {
+            discord.react("✅");
+            return;
+          }
 
-      /*setTimeout(() => {
-        bot.removeListener("message", messageListener);
-        if (successfullySent === true) {
-          return;
-        }
-  
-        discord.react("❌");
-      }, 500);*/
+          discord.react("❌");
+        }, 500);
+      }
     }
   }
 }

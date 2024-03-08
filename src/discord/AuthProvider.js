@@ -1,124 +1,134 @@
-const config = require("../../config.json");
+const config = require("../../config.js");
 const axios = require("axios");
 
-const SCF_GM_PERMS = {
-  'manage_roles': true,
-  'blacklist': true,
-  'mc_demote': true,
-  'execute': true,
-  'invite': true,
-  'kick': true,
-  'mute': true,
-  'mc_promote': true,
-  'restart': true,
-  'unmute': true
-};
-
-const MOD_PERMS = {
-  'manage_roles': false,
-  'blacklist': true,
-  'mc_demote': true,
-  'execute': false,
-  'invite': true,
-  'kick': true,
-  'mute': true,
-  'mc_promote': true,
-  'restart': true,
-  'unmute': true
+const GM_PERMS = {
+  manage_roles: true,
+  blacklist: true,
+  mc_demote: true,
+  execute: true,
+  invite: true,
+  kick: true,
+  mute: true,
+  mc_promote: true,
+  restart: true,
+  unmute: true,
 };
 
 const ADM_PERMS = {
-  'manage_roles': true,
-  'blacklist': true,
-  'mc_demote': true,
-  'execute': false,
-  'invite': true,
-  'kick': true,
-  'mute': true,
-  'mc_promote': true,
-  'restart': true,
-  'unmute': true
+  manage_roles: true,
+  blacklist: true,
+  mc_demote: true,
+  execute: false,
+  invite: true,
+  kick: true,
+  mute: true,
+  mc_promote: true,
+  restart: true,
+  unmute: true,
+  debug: false
+};
+
+const MOD_PERMS = {
+  manage_roles: false,
+  blacklist: true,
+  mc_demote: true,
+  execute: false,
+  invite: true,
+  kick: true,
+  mute: true,
+  mc_promote: true,
+  restart: true,
+  unmute: true,
+  debug: false
 };
 
 const DEFAULT_PERMS = {
-  'manage_roles': false,
-  'blacklist': false,
-  'mc_demote': false,
-  'execute': false,
-  'invite': false,
-  'kick': false,
-  'mute': false,
-  'mc_promote': false,
-  'restart': false,
-  'unmute': false
+  manage_roles: false,
+  blacklist: false,
+  mc_demote: false,
+  execute: false,
+  invite: false,
+  kick: false,
+  mute: false,
+  mc_promote: false,
+  restart: false,
+  unmute: false,
+  debug: false
 };
 
-class CommandHandler {
-
+class AuthHandler {
   async permissionInfo(user) {
     let permissions = DEFAULT_PERMS;
 
     let permission_level = 0;
     let perm_name = "Member";
-    let team = "None";
-    let auth_provider = "SCF_INTERNAL";
+    let auth_provider = "INNATE";
 
-    if(user.roles.cache.has('1048690255903072339') || user.roles.cache.has('1048690255903072340')){
-      permission_level = 1;
-      perm_name = "SCF Moderator";
-      team = "SCF";
-      auth_provider = "SCF_ROLES";
+    config.discord.commands.permissions.mod.forEach(mod_id => {
+      if (user.roles.cache.has(mod_id)) {
+        permission_level = 1;
+        perm_name = "Moderator";
+        auth_provider = "ROLES";
+  
+        permissions = MOD_PERMS;
+      }
+    });
 
-      permissions = MOD_PERMS;
-    }
+    config.discord.commands.permissions.admin.forEach(admin_id => {
+      if (user.roles.cache.has(admin_id)) {
+        permission_level = 3;
+        perm_name = "Administrator";
+        auth_provider = "ROLES";
+  
+        permissions = ADM_PERMS;
+      }
+    });
 
-    if(user.roles.cache.has('1203459776667979808') || user.roles.cache.has('1048690255903072342') || user.roles.cache.has('1048690255903072343') || user.roles.cache.has('1048690255903072344')){
-      permission_level = 3;
-      perm_name = "SCF Admin";
-      team = "SCF";
-      auth_provider = "SCF_ROLES";
-
-      permissions = ADM_PERMS;
-    }
-
-    if(config.discord.commands.users.includes(user.id)){
-      permission_level = 5;
-      perm_name = "SCF Guild Master";
-      team = "SCF";
-      auth_provider = "SCF_INTERNAL";
-
-      permissions = SCF_GM_PERMS;
-    }
+    config.discord.commands.permissions.ownerIDs.forEach(owner_id => {
+      if (user.id == owner_id) {
+        permission_level = 5;
+        perm_name = "Guild Owner";
+        auth_provider = "INTERNAL";
+  
+        permissions = GM_PERMS;
+      }
+    });
 
     try {
-      let player_info = await Promise.all([
-        axios.get(
-          `https://sky.dssoftware.ru/api.php?method=getPermissionsLevel&discord_id=${user.id}&api=${config.minecraft.API.SCF.key}`
-        ),
-      ]).catch((error) => {});
-
-      player_info = player_info[0]?.data ?? {};
-
-      if(player_info?.data?.exists){
-        permission_level = player_info?.data?.permission_level ?? 0;
-        team = player_info?.data?.team ?? "None";
-        perm_name = "Role was assigned via permission command.";
-        permissions = player_info?.permissions ?? DEFAULT_PERMS;
-
-        auth_provider = "SCF_WEB";
+      if(config.minecraft.API.SCF.enabled){
+        let player_info = await Promise.all([
+          axios.get(
+            `https://sky.dssoftware.ru/api.php?method=getPermissionsLevel&discord_id=${user.id}&api=${config.minecraft.API.SCF.key}`,
+          ),
+        ]).catch((error) => {});
+  
+        player_info = player_info[0]?.data ?? {};
+  
+        if (player_info?.data?.exists) {
+          permission_level = player_info?.data?.permission_level ?? 0;
+          perm_name = "Role was assigned via permission command.";
+          permissions = player_info?.permissions ?? DEFAULT_PERMS;
+  
+          auth_provider = "SCF_WEB";
+        }
       }
     } catch (e) {
       console.log("Permission API Down");
     }
 
+    config.discord.commands.permissions.dev.forEach(dev_id => {
+      if (user.roles.cache.has(dev_id)) {
+        permissions.debug = true;
+      }
+    });
+
     return {
       level: permission_level,
       name: perm_name,
-      team: team,
       permissions: permissions,
-      provider: auth_provider
+      provider: auth_provider,
     };
   }
 }
 
-module.exports = CommandHandler;
+module.exports = AuthHandler;

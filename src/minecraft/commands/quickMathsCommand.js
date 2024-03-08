@@ -1,5 +1,5 @@
 const minecraftCommand = require("../../contracts/minecraftCommand.js");
-const config = require("../../../config.json");
+const config = require("../../../config.js");
 
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const getAnswer = (message, answer) => {

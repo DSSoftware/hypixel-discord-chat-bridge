@@ -1,8 +1,8 @@
 const { EmbedBuilder } = require("discord.js");
-const config = require("../../../config.json");
+const config = require("../../../config.js");
 
 module.exports = {
-  name: "online",
+  name: `${config.minecraft.bot.guild_prefix}` + "online",
   description: "List of online members.",
 
   execute: async (interaction) => {
