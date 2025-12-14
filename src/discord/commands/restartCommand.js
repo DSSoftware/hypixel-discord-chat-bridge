@@ -1,25 +1,56 @@
-const app = require("./../../Application.js");
-const { Embed } = require("../../contracts/embedHandler.js");
+const HypixelDiscordChatBridgeError = require('../../contracts/errorHandler.js');
+const config = require('#root/config.js').getConfig();
+const { EmbedBuilder } = require('discord.js');
+const app = require('./../../Application.js');
+const AuthProvider = require('#root/src/AuthProvider.js');
 
 module.exports = {
-  name: "restart",
-  description: "Restarts the bot.",
-  moderatorOnly: true,
+    name: `${config.minecraft.bot.guild_prefix}` + 'restart',
+    description: 'Restarts the bot.',
 
-  execute: async (interaction) => {
-    const restartEmbed = new Embed().setTitle("Restarting...").setDescription("The bot is restarting. This might take few seconds.");
+    execute: async (interaction) => {
+        const user = interaction.member;
+        const executor_id = user.id;
+        const permission_required = 'restart';
 
-    interaction.followUp({ embeds: [restartEmbed] });
+        let permission = false;
 
-    await bot.end("restart");
-    await client.destroy();
+        const AuthData = new AuthProvider();
+        permission = (await AuthData.permissionInfo(user)).permissions?.[permission_required] ?? false;
 
-    app.register().then(() => {
-      app.connect();
-    });
+        if (!permission) {
+            throw new HypixelDiscordChatBridgeError(
+                'You do not have permission to use this command, or the Permission API is Down.'
+            );
+        }
 
-    const successfulRestartEmbed = new Embed().setTitle("Success").setDescription("The bot has been restarted successfully.");
+        const restartEmbed = new EmbedBuilder()
+            .setColor(15548997)
+            .setTitle('Restarting...')
+            .setDescription('The bot is restarting. This might take few seconds.')
+            .setFooter({
+                text: '/help [command] for more information',
+                iconURL: config.branding.logo
+            });
 
-    interaction.followUp({ embeds: [successfulRestartEmbed] });
-  }
+        interaction.followUp({ embeds: [restartEmbed] });
+
+        await bot.end('restart');
+        await client.destroy();
+
+        app.register().then(() => {
+            app.connect();
+        });
+
+        const successfulRestartEmbed = new EmbedBuilder()
+            .setColor(2067276)
+            .setTitle('Restart Successful!')
+            .setDescription('The bot has been restarted successfully.')
+            .setFooter({
+                text: '/help [command] for more information',
+                iconURL: config.branding.logo
+            });
+
+        interaction.followUp({ embeds: [successfulRestartEmbed] });
+    }
 };
